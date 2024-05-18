@@ -9,5 +9,10 @@ Events = Literal[
     "image",
     "image_set",
     "image_fulfill",
+    "audio",
+    "video",
+    "file",
+    "location",
+    "sticker",
 ]
 AnyAsyncFunction = Callable[..., Awaitable[Any]]
