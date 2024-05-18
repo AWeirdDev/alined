@@ -212,7 +212,7 @@ class FollowEventCtx(BaseModel):
 
 
 class UnfollowEvent(Event, Repliable):
-    type: Literal["follow"]
+    type: Literal["unfollow"]
 
 
 class JoinEvent(Event, Repliable):
