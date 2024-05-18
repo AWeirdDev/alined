@@ -77,17 +77,18 @@ class Client:
 
                 elif e.message.type == "image":
                     image = e.message
+                    ctx = redirect_context(e)
 
                     if image.image_set:
                         if image.image_set.index == image.image_set.total:
                             images = release_wi_set(image.image_set.id)
-                            await self.push("image_set", e, images)
-                            await self.push("image_fulfill", e, images)
+                            await self.push("image_set", ctx, images)
+                            await self.push("image_fulfill", ctx, images)
                         else:
                             append_wi_set(image.image_set.id, image)
 
-                    await self.push("image", e)
-                    await self.push("image_fulfill", e, [image])
+                    await self.push("image", ctx)
+                    await self.push("image_fulfill", ctx, [image])
 
     def _register_event_handler(self, name: Events, handler: AnyAsyncFunction):
         if name not in self.handlers:
