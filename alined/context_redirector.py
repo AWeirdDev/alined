@@ -3,10 +3,17 @@ from .context import (
     AudioMessageContext,
     BaseContext,
     FileMessageContext,
+    FollowContext,
     ImageMessageContext,
+    JoinContext,
+    LeaveContext,
     LocationMessageContext,
+    MemberJoinedContext,
+    MemberLeftContext,
     TextMessageContext,
     StickerMessageContext,
+    UnfollowContext,
+    UnsendContext,
 )
 
 
@@ -32,6 +39,16 @@ def redirect_context(event: EventDataclasses) -> BaseContext:
         "memberJoined",
         "memberLeft",
     }:
-        raise NotImplementedError("waiting")
+        ctx = {
+            "unsend": UnsendContext,
+            "follow": FollowContext,
+            "unfollow": UnfollowContext,
+            "join": JoinContext,
+            "leave": LeaveContext,
+            "memberJoined": MemberJoinedContext,
+            "memberLeft": MemberLeftContext,
+        }[event.type]
+
+        return ctx
 
     raise NotImplementedError("unknown")

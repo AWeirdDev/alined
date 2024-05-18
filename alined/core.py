@@ -98,6 +98,29 @@ class Client:
                     # Just in case :3
                     raise RuntimeError("Unrecognized message type: %s" % e.message.type)
 
+            elif e.type in {
+                "unsend",
+                "follow",
+                "unfollow",
+                "join",
+                "leave",
+                "memberJoined",
+                "memberLeft",
+            }:
+                if e.type == "memberJoined":
+                    name = "member_joined"
+
+                elif e.type == "memberLeft":
+                    name = "member_left"
+
+                else:
+                    name = e.type
+
+                await self.push(name, redirect_context(e))
+
+            else:
+                raise RuntimeError("Unrecognized event type: %s" % e.type)
+
     def _register_event_handler(self, name: Events, handler: AnyAsyncFunction):
         if name not in self.handlers:
             self.handlers[name] = [handler]
