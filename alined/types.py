@@ -1,4 +1,14 @@
-from typing import Any, Awaitable, Callable, Literal
+from typing import Any, Awaitable, Callable, Literal, Union
+from .dataclass import (
+    MessageEvent,
+    UnsendEvent,
+    FollowEvent,
+    UnfollowEvent,
+    JoinEvent,
+    LeaveEvent,
+    MemberJoinedEvent,
+    MemberLeftEvent,
+)
 
 Events = Literal[
     # misc
@@ -14,5 +24,22 @@ Events = Literal[
     "file",
     "location",
     "sticker",
+    "unsend",
+    "follow",
+    "unfollow",
+    "join",
+    "leave",
+    "member_joined",
+    "member_left"
+]
+EventDataclasses = Union[
+    MessageEvent,
+    UnsendEvent,
+    FollowEvent,
+    UnfollowEvent,
+    JoinEvent,
+    LeaveEvent,
+    MemberJoinedEvent,
+    MemberLeftEvent,
 ]
 AnyAsyncFunction = Callable[..., Awaitable[Any]]

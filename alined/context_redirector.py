@@ -1,3 +1,4 @@
+from .types import EventDataclasses
 from .context import (
     AudioMessageContext,
     BaseContext,
@@ -7,10 +8,9 @@ from .context import (
     TextMessageContext,
     StickerMessageContext,
 )
-from .dataclass import MessageEvent
 
 
-def redirect_context(event: MessageEvent) -> BaseContext:
+def redirect_context(event: EventDataclasses) -> BaseContext:
     if event.type == "message":
         msg = event.message
         ctx = {
@@ -22,5 +22,8 @@ def redirect_context(event: MessageEvent) -> BaseContext:
             "sticker": StickerMessageContext,
         }[msg.type](event)
         return ctx
+    
+    elif event.type in {"unsend", "follow", "unfollow", "join", "leave", "memberJoined", "memberLeft"}:
+        raise NotImplementedError("waiting")
 
     raise NotImplementedError("unknown")

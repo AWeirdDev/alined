@@ -1,4 +1,5 @@
-from typing import Union
+
+from alined.types import EventDataclasses
 from .dataclass import (
     FollowEvent,
     JoinEvent,
@@ -26,16 +27,7 @@ from .dataclass import (
 
 def redirect_dataclass(
     d: dict,
-) -> Union[
-    MessageEvent,
-    UnsendEvent,
-    FollowEvent,
-    UnfollowEvent,
-    JoinEvent,
-    LeaveEvent,
-    MemberJoinedEvent,
-    MemberLeftEvent,
-]:
+) -> EventDataclasses:
     if d["type"] == "message":
         kwargs = {
             **d,

@@ -2,15 +2,24 @@ from typing import Any, Literal, NoReturn, Optional, Sequence, Tuple, Union
 from .dataclass import (
     DeliveryContext,
     Event,
+    FollowEvent,
+    JoinEvent,
+    LeaveEvent,
+    MemberJoinedEvent,
+    MemberLeftEvent,
     MessageEvent,
     MessageEventsSource,
+    Repliable,
     Source,
+    SourceUser,
+    UnfollowEvent,
+    UnsendEvent,
     WebhookAudioMessage,
     WebhookFileMessage,
     WebhookImageMessage,
     WebhookLocationMessage,
     WebhookStickerMessage,
-    WebhookTextMessage,
+    WebhookTextMessage
 )
 
 
@@ -41,6 +50,10 @@ class BaseContext:
     @property
     def is_redelivery(self) -> bool:
         return self.e.delivery_context.is_redelivery
+    
+    @property
+    def type(self) -> Any:
+        return self.type
 
 
 class MessageContext(BaseContext):
@@ -191,3 +204,53 @@ class StickerMessageContext(MessageContext):
             and self.message.text  # satisfies type check
         )
         return self.message.text
+
+class UnsendContext(BaseContext):
+    e: UnsendEvent
+
+    @property
+    def message_id(self):
+        return self.e.unsend.message_id
+
+class GeneralRepliable(BaseContext):
+    e: Repliable
+
+    @property
+    def reply_token(self):
+        return self.e.reply_token
+
+
+class FollowContext(GeneralRepliable):
+    e: FollowEvent  # type: ignore
+
+    @property
+    def is_unblocked(self) -> bool:
+        """Is this official account being unblocked?
+        
+        - ``true``: The user has unblocked the official account.
+        - ``false``: The user has added the account has a friend.
+        """
+        return self.e.follow.is_unblocked
+
+class UnfollowContext(GeneralRepliable):
+    e: UnfollowEvent  # type: ignore
+
+class JoinContext(GeneralRepliable):
+    e: JoinEvent  # type: ignore
+
+class LeaveContext(BaseContext):
+    e: LeaveEvent
+
+class MemberJoinedContext(GeneralRepliable):
+    e: MemberJoinedEvent  # type: ignore
+
+    @property
+    def members(self) -> Sequence[SourceUser]:
+        return self.e.joined.members
+    
+class MemberLeftContext(BaseContext):
+    e: MemberLeftEvent
+
+    @property
+    def left(self) -> Sequence[SourceUser]:
+        return self.e.left.members
