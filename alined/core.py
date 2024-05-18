@@ -90,6 +90,14 @@ class Client:
                     await self.push("image", ctx)
                     await self.push("image_fulfill", ctx, [image])
 
+                elif e.message.type in {"audio", "file", "location", "sticker"}:
+                    await self.push(e.message.type, redirect_context(e))
+
+                else:
+                    # Although pydantic probably has handled this for us
+                    # Just in case :3
+                    raise RuntimeError("Unrecognized message type: %s" % e.message.type)
+
     def _register_event_handler(self, name: Events, handler: AnyAsyncFunction):
         if name not in self.handlers:
             self.handlers[name] = [handler]
