@@ -66,9 +66,12 @@ MessageEventsSource = Union[
 ]
 
 
-class MessageEvent(Event):
-    type: Literal["message"]
+class Repliable(BaseModel):
     reply_token: str = Field(..., alias="replyToken")
+
+
+class MessageEvent(Event, Repliable):
+    type: Literal["message"]
     message: Union[
         WebhookTextMessage,
         WebhookImageMessage,
@@ -178,3 +181,61 @@ class WebhookStickerMessage(QuotableWithResponse, QuotableByUser):  # type: igno
     text: Optional[str] = Field(
         None, description="Only included when sticker_resource_type is MESSAGE"
     )
+
+
+class UnsendEvent(Event):
+    type: Literal["unsend"]
+    unsend: UnsendMessage
+
+
+class UnsendMessage(BaseModel):
+    # i mean like... wtf??
+    # why not just do something like `UnsendEvent.messageId`
+    # why tf do we need to do this... waste of time and code, 0/10 would recommend
+    message_id: str = Field(..., alias="messageId")
+
+
+class FollowEvent(Event, Repliable):
+    type: Literal["follow"]
+    follow: FollowEventCtx
+
+
+class FollowEventCtx(BaseModel):
+    is_unblocked: bool = Field(
+        ...,
+        alias="isUnblocked",
+        description=(
+            "true: The user has unblocked the LINE official account; "
+            "false: the user has added the account as a friend"
+        ),
+    )
+
+
+class UnfollowEvent(Event, Repliable):
+    type: Literal["follow"]
+
+
+class JoinEvent(Event, Repliable):
+    type: Literal["join"]
+
+
+class LeaveEvent(Event):
+    type: Literal["leave"]
+
+
+class MemberJoinedEvent(Event, Repliable):
+    type: Literal["memberJoined"]
+    joined: MemberJoinedEventCtx
+
+
+class MemberJoinedEventCtx(BaseModel):
+    members: List[SourceUser]
+
+
+class MemberLeftEvent(Event):
+    type: Literal["memberLeft"]
+    left: MemberLeftEventCtx
+
+
+class MemberLeftEventCtx(Event):
+    members: List[SourceUser]

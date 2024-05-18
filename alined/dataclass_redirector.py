@@ -1,8 +1,16 @@
+from typing import Union
 from .dataclass import (
+    FollowEvent,
+    JoinEvent,
+    LeaveEvent,
+    MemberJoinedEvent,
+    MemberLeftEvent,
     MessageEvent,
     SourceGroupChatForMessageEvents,
     SourceUser,
     SourceMultiPersonChatForMessageEvents,
+    UnfollowEvent,
+    UnsendEvent,
     WebhookAudioContentProviderExternal,
     WebhookAudioMessage,
     WebhookFileMessage,
@@ -16,7 +24,18 @@ from .dataclass import (
 )
 
 
-def redirect_dataclass(d: dict) -> MessageEvent:
+def redirect_dataclass(
+    d: dict,
+) -> Union[
+    MessageEvent,
+    UnsendEvent,
+    FollowEvent,
+    UnfollowEvent,
+    JoinEvent,
+    LeaveEvent,
+    MemberJoinedEvent,
+    MemberLeftEvent,
+]:
     if d["type"] == "message":
         kwargs = {
             **d,
@@ -79,6 +98,27 @@ def redirect_dataclass(d: dict) -> MessageEvent:
             raise NotImplementedError("unknown message event type")
 
         return MessageEvent(**kwargs)
+
+    elif d["type"] == "unsend":
+        return UnsendEvent(**d)
+
+    elif d["type"] == "follow":
+        return FollowEvent(**d)
+
+    elif d["type"] == "unfollow":
+        return UnfollowEvent(**d)
+
+    elif d["type"] == "join":
+        return JoinEvent(**d)
+
+    elif d["type"] == "leave":
+        return LeaveEvent(**d)
+
+    elif d["type"] == "memberJoined":
+        return MemberJoinedEvent(**d)
+
+    elif d["type"] == "memberLeft":
+        return MemberLeftEvent(**d)
 
     else:
         raise NotImplementedError("oh no")
