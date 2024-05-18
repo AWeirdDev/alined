@@ -86,29 +86,29 @@ class MessageContext(BaseContext):
     @property
     def id(self):
         return self.message.id
-    
+
     @property
     def user_id(self):
         return self.source.user_id
-    
+
     @property
     def group_id(self) -> Optional[str]:
         """Group ID.
-        
+
         If in rooms, return the room ID.
         """
         if self.source.type == "user":
             return None
-        
+
         elif self.source.type == "room":
             return self.source.room_id
-        
+
         return self.source.group_id
-    
+
     @property
     def room_id(self) -> Optional[str]:
         """Room ID.
-        
+
         If in group, return the group ID.
         """
         return self.group_id
@@ -243,7 +243,7 @@ class UnsendContext(BaseContext):
     @property
     def group_id(self):
         return self.source.group_id  # type: ignore
-    
+
     @property
     def user_id(self):
         return self.source.user_id  # type: ignore
@@ -268,10 +268,10 @@ class FollowContext(GeneralRepliable):
         - ``false``: The user has added the account has a friend.
         """
         return self.e.follow.is_unblocked
-    
+
     @property
     def user_id(self) -> SourceUser:
-        return self.source  # type: ignore
+        return self.source.user_id  # type: ignore
 
 
 class UnfollowContext(GeneralRepliable):
@@ -279,7 +279,7 @@ class UnfollowContext(GeneralRepliable):
 
     @property
     def user_id(self) -> SourceUser:
-        return self.source  # type: ignore
+        return self.source.user_id  # type: ignore
 
 
 class JoinContext(GeneralRepliable):
@@ -287,7 +287,7 @@ class JoinContext(GeneralRepliable):
 
     @property
     def group_id(self) -> SourceGroupChatForCommonWebhooks:
-        return self.source  # type: ignore
+        return self.source.group_id  # type: ignore
 
 
 class LeaveContext(BaseContext):
@@ -295,7 +295,7 @@ class LeaveContext(BaseContext):
 
     @property
     def group_id(self) -> SourceGroupChatForCommonWebhooks:
-        return self.source  # type: ignore
+        return self.source.group_id  # type: ignore
 
 
 class MemberJoinedContext(GeneralRepliable):
@@ -304,10 +304,10 @@ class MemberJoinedContext(GeneralRepliable):
     @property
     def member_ids(self) -> Sequence[SourceUser]:
         return self.e.joined.members
-    
+
     @property
     def group_id(self) -> SourceGroupChatForCommonWebhooks:
-        return self.source  # type: ignore
+        return self.source.group_id  # type: ignore
 
 
 class MemberLeftContext(BaseContext):
@@ -316,7 +316,7 @@ class MemberLeftContext(BaseContext):
     @property
     def member_ids(self) -> Sequence[SourceUser]:
         return self.e.left.members
-    
+
     @property
     def group_id(self) -> SourceGroupChatForCommonWebhooks:
-        return self.source  # type: ignore
+        return self.source.group_id  # type: ignore

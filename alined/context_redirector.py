@@ -47,7 +47,7 @@ def redirect_context(event: EventDataclasses) -> BaseContext:
             "leave": LeaveContext,
             "memberJoined": MemberJoinedContext,
             "memberLeft": MemberLeftContext,
-        }[event.type]
+        }[event.type](event)
 
         return ctx
 
