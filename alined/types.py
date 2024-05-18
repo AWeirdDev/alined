@@ -30,7 +30,7 @@ Events = Literal[
     "join",
     "leave",
     "member_joined",
-    "member_left"
+    "member_left",
 ]
 EventDataclasses = Union[
     MessageEvent,

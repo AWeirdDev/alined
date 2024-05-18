@@ -22,8 +22,16 @@ def redirect_context(event: EventDataclasses) -> BaseContext:
             "sticker": StickerMessageContext,
         }[msg.type](event)
         return ctx
-    
-    elif event.type in {"unsend", "follow", "unfollow", "join", "leave", "memberJoined", "memberLeft"}:
+
+    elif event.type in {
+        "unsend",
+        "follow",
+        "unfollow",
+        "join",
+        "leave",
+        "memberJoined",
+        "memberLeft",
+    }:
         raise NotImplementedError("waiting")
 
     raise NotImplementedError("unknown")

@@ -1,4 +1,3 @@
-
 from alined.types import EventDataclasses
 from .dataclass import (
     FollowEvent,

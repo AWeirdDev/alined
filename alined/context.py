@@ -19,7 +19,7 @@ from .dataclass import (
     WebhookImageMessage,
     WebhookLocationMessage,
     WebhookStickerMessage,
-    WebhookTextMessage
+    WebhookTextMessage,
 )
 
 
@@ -50,7 +50,7 @@ class BaseContext:
     @property
     def is_redelivery(self) -> bool:
         return self.e.delivery_context.is_redelivery
-    
+
     @property
     def type(self) -> Any:
         return self.type
@@ -205,12 +205,14 @@ class StickerMessageContext(MessageContext):
         )
         return self.message.text
 
+
 class UnsendContext(BaseContext):
     e: UnsendEvent
 
     @property
     def message_id(self):
         return self.e.unsend.message_id
+
 
 class GeneralRepliable(BaseContext):
     e: Repliable
@@ -226,20 +228,24 @@ class FollowContext(GeneralRepliable):
     @property
     def is_unblocked(self) -> bool:
         """Is this official account being unblocked?
-        
+
         - ``true``: The user has unblocked the official account.
         - ``false``: The user has added the account has a friend.
         """
         return self.e.follow.is_unblocked
 
+
 class UnfollowContext(GeneralRepliable):
     e: UnfollowEvent  # type: ignore
+
 
 class JoinContext(GeneralRepliable):
     e: JoinEvent  # type: ignore
 
+
 class LeaveContext(BaseContext):
     e: LeaveEvent
+
 
 class MemberJoinedContext(GeneralRepliable):
     e: MemberJoinedEvent  # type: ignore
@@ -247,7 +253,8 @@ class MemberJoinedContext(GeneralRepliable):
     @property
     def members(self) -> Sequence[SourceUser]:
         return self.e.joined.members
-    
+
+
 class MemberLeftContext(BaseContext):
     e: MemberLeftEvent
 
