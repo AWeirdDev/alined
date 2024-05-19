@@ -1,4 +1,10 @@
 from typing import Any, Literal, NoReturn, Optional, Sequence, Tuple, Union
+
+from .components import TextMessage
+
+from .http import send_reply_message
+
+from .types import AnyMessage, Headers
 from .dataclass import (
     DeliveryContext,
     Event,
@@ -60,8 +66,9 @@ class BaseContext:
 class MessageContext(BaseContext):
     e: MessageEvent
 
-    def __init__(self, e: MessageEvent):
+    def __init__(self, e: MessageEvent, headers: Headers):
         super().__init__(e)
+        self.headers = headers
 
     @property
     def type(self):
@@ -112,6 +119,28 @@ class MessageContext(BaseContext):
         If in group, return the group ID.
         """
         return self.group_id
+
+    async def respond(self, *contents: Union[str, dict, AnyMessage]):
+        """Respond to the message.
+
+        Args:
+            contents (str | :obj:`AnyMessage`): Contents.
+        """
+
+        await send_reply_message(
+            body={
+                "replyToken": self.reply_token,
+                "messages": [
+                    TextMessage(c).tojson()
+                    if isinstance(c, str)
+                    else c
+                    if isinstance(c, dict)
+                    else c.tojson()
+                    for c in contents
+                ],
+            },
+            headers=self.headers,
+        )
 
 
 class TextMessageContext(MessageContext):

@@ -116,7 +116,9 @@ class TextMessage(Component):
         return {
             "type": "text",
             "text": self.text,
-            "emojis": list(map(lambda i: i.model_dump(), self.emojis)),
+            "emojis": list(map(lambda i: i.model_dump(), self.emojis))
+            if self.emojis
+            else None,
             "sender": tojson(self.sender),
             "quickReply": tojson(self.quick_reply),
         }

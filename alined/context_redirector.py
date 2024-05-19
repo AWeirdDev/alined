@@ -1,4 +1,4 @@
-from .types import EventDataclasses
+from .types import EventDataclasses, Headers
 from .context import (
     AudioMessageContext,
     BaseContext,
@@ -17,7 +17,7 @@ from .context import (
 )
 
 
-def redirect_context(event: EventDataclasses) -> BaseContext:
+def redirect_context(event: EventDataclasses, headers: Headers) -> BaseContext:
     if event.type == "message":
         msg = event.message
         ctx = {
@@ -27,7 +27,7 @@ def redirect_context(event: EventDataclasses) -> BaseContext:
             "file": FileMessageContext,
             "location": LocationMessageContext,
             "sticker": StickerMessageContext,
-        }[msg.type](event)
+        }[msg.type](event, headers)
         return ctx
 
     elif event.type in {

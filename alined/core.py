@@ -9,7 +9,7 @@ from typing import (
 from fastapi import FastAPI, Request
 
 from .dataclass_redirector import redirect_dataclass
-from .types import AnyAsyncFunction, Events
+from .types import AnyAsyncFunction, EventDataclasses, Events, Headers
 from .context_redirector import redirect_context
 from .server import create_server
 from .webhooks import verify_signature
@@ -34,6 +34,7 @@ class Client:
     channel_access_token: str
     app: FastAPI
     handlers: Dict[Events, List[AnyAsyncFunction]]
+    headers: Headers
 
     def __init__(
         self,
@@ -47,6 +48,7 @@ class Client:
         self.channel_access_token = (
             channel_access_token or os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
         )
+        self.headers = {"Authorization": "Bearer %s" % channel_access_token}
 
         self.app = create_server(self.handler)
         self.handlers = {}
@@ -65,19 +67,21 @@ class Client:
         if not context["events"]:
             return await self.push("verified")
 
-        print(json.dumps(context, indent=4))
-
         for evnt in context["events"]:
             e = redirect_dataclass(evnt)
+
+            def redir_ctx(e: EventDataclasses):
+                return redirect_context(e, self.headers)
+
             if e.type == "message":
                 await self.push("message", e)
 
                 if e.message.type == "text":
-                    await self.push("text", redirect_context(e))
+                    await self.push("text", redir_ctx(e))
 
                 elif e.message.type == "image":
                     image = e.message
-                    ctx = redirect_context(e)
+                    ctx = redir_ctx(e)
 
                     if image.image_set:
                         if image.image_set.index == image.image_set.total:
@@ -91,7 +95,7 @@ class Client:
                     await self.push("image_fulfill", ctx, [image])
 
                 elif e.message.type in {"audio", "file", "location", "sticker"}:
-                    await self.push(e.message.type, redirect_context(e))
+                    await self.push(e.message.type, redir_ctx(e))
 
                 else:
                     # Although pydantic probably has handled this for us
@@ -116,7 +120,7 @@ class Client:
                 else:
                     name = e.type
 
-                await self.push(name, redirect_context(e))
+                await self.push(name, redir_ctx(e))
 
             else:
                 raise RuntimeError("Unrecognized event type: %s" % e.type)

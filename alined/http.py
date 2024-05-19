@@ -11,9 +11,11 @@ async def send_reply_message(body: dict, headers: Mapping[str, str]) -> dict:
         body (dict): Body.
         headers (Mapping[str, str]): Headers.
     """
+    print(body)
     client = httpx.AsyncClient()
     r = await client.post(
         "https://api.line.me/v2/bot/message/reply", headers=headers, json=body
     )
+    print(r.json())
     r.raise_for_status()
     return r.json()

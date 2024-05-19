@@ -1,4 +1,4 @@
-from typing import Any, Awaitable, Callable, Literal, Union
+from typing import Any, Awaitable, Callable, Literal, Mapping, Union
 from .dataclass import (
     MessageEvent,
     UnsendEvent,
@@ -9,7 +9,16 @@ from .dataclass import (
     MemberJoinedEvent,
     MemberLeftEvent,
 )
+from .components import (
+    TextMessage,
+    AudioMessage,
+    ImageMessage,
+    LocationMessage,
+    StickerMessage,
+    VideoMessage,
+)
 
+Headers = Mapping[str, str]
 Events = Literal[
     # misc
     "verified",
@@ -43,3 +52,11 @@ EventDataclasses = Union[
     MemberLeftEvent,
 ]
 AnyAsyncFunction = Callable[..., Awaitable[Any]]
+AnyMessage = Union[
+    TextMessage,
+    AudioMessage,
+    ImageMessage,
+    LocationMessage,
+    StickerMessage,
+    VideoMessage,
+]
