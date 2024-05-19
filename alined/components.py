@@ -257,9 +257,8 @@ class LocationMessage(Component):
             "latitude": latitude,
             "longitude": longitude,
             "sender": tojson(sender),
-            "quickReply": tojson(quick_reply)
+            "quickReply": tojson(quick_reply),
         }
-    
+
     def tojson(self):
         return self.json
-    
