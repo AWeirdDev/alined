@@ -109,13 +109,14 @@ class TextMessage(Component):
             )
             self.emojis.append(emoji)
 
+        result += self.text[prev_end:]
         self.text = result
 
     def tojson(self):
         return {
             "type": "text",
             "text": self.text,
-            "emojis": map(lambda i: i.model_dump(), self.emojis),
+            "emojis": list(map(lambda i: i.model_dump(), self.emojis)),
             "sender": tojson(self.sender),
             "quickReply": tojson(self.quick_reply),
         }
